@@ -1,86 +1,95 @@
 import 'react-native-gesture-handler';
 import { KeyboardAvoidingView ,StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import React, { useState } from 'react';
-import Task from './components/Task';
+import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { BackHandler, Alert } from 'react-native';
 import Login from './screens/Login';
+import Home from './screens/Home';
+import Settings from './screens/Settings';
 
-function Home() {
-  const [task, setTask] = useState();
 
-  const [taskItems, setTaskItems] = useState([]);
+const Drawer = createDrawerNavigator();
 
-  const handleAddTask = () => {
-    Keyboard.dismiss();
-    setTaskItems([...taskItems, task]);
-    setTask(null);
-  }
+const AuthStack = createNativeStackNavigator();
 
-    const completeTask = (index) => {
-      let itemsCopy = [...taskItems];
-      itemsCopy.splice(index, 1);
-      setTaskItems(itemsCopy);
-  }
+function DrawerRoutes() {
   return (
-    <View style={styles.container}>
-      
-    {/* Today's Tasks */}
-    <View style={styles.tasksWrapper}>
-      <Text style={styles.sectionTitle}>Today's Tasks</Text>
+    <Drawer.Navigator>
+      <Drawer.Screen name="Home" component={Home} options={({navigation})=>({
+          headerRight: () => (
+            <TouchableOpacity style={styles.logoutBtn} onPress={() => Alert.alert('Hold on!', 'Are you sure you want to log out?', [
+              {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {text: 'YES', onPress: () => navigation.navigate("Login")},
+            ])} >
+                <Text>Log Out</Text>
+            </TouchableOpacity>
+          ), 
 
-      <View style={styles.items}>
-        {/* This is where the task will go */}
-        {
-          taskItems.map((item, index) => {
-            return(
-              <TouchableOpacity key={index} onPress={()=>completeTask(index)}>
-              <Task key={index} text={item}/>
-              </TouchableOpacity>
-             ) 
-          })
-        }
-      </View>
-    </View>
-    {/* Write a task */}
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.writeTaskWrapper}>
+          headerShown: true,
+          headerStyle: { backgroundColor: '#D5F2E3' },
+        })}/>
+      <Drawer.Screen name="Settings" component={Settings} options={({navigation})=>({
+          headerRight: () => (
+            <TouchableOpacity style={styles.logoutBtn} onPress={() => Alert.alert('Hold on!', 'Are you sure you want to log out?', [
+              {
+                text: 'Cancel',
+                onPress: () => null,
+                style: 'cancel',
+              },
+              {text: 'YES', onPress: () => navigation.navigate("Login")},
+            ])} >
+                <Text>Log Out</Text>
+            </TouchableOpacity>
+          ), 
 
-      <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text=>setTask(text)} />
-      <TouchableOpacity onPress={()=>handleAddTask()} >
-        <View style={styles.addWrapper}>
-          <Text style={styles.addText}>+</Text>
-        </View>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
-
-  </View>
+          headerShown: true,
+          headerStyle: { backgroundColor: '#D5F2E3' },
+        })} />
+    </Drawer.Navigator>
   );
 }
 
-function Settings() {
-  return (
-    <View style={styles.container}>
-      <Text>I am the Settings Component</Text>
-
-    </View>
-  );
-}
 
 export default function App() {
-  
-  const { Navigator, Screen } = createDrawerNavigator();
-  
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert('Hold on!', 'Are you sure you want to go back?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {text: 'YES', onPress: () => BackHandler.exitApp()},
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, []);
   return (
     <NavigationContainer>
-      <Navigator initialRouteName='Login'>
-        <Screen name="Home" component={Home}/>
-        <Screen name="Settings" component={Settings} />
-        <Screen name = "Login" component = {Login}/>
-
-      </Navigator>
+      <AuthStack.Navigator screenOptions={{headerStyle:{backgroundColor:"#D5F2E3"}}} >
+        <AuthStack.Screen style={styles.Nav} name="Login" component={Login} options={{title:'Log In',}}/>
+    
+        <AuthStack.Screen name="Home" component={DrawerRoutes} options={{headerShown:false}} ></AuthStack.Screen>
+        
+      </AuthStack.Navigator>
+      
     </NavigationContainer>
+
+    
     
   );
 }
@@ -90,46 +99,18 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#d5f2e3',
   },
-  tasksWrapper: {
-    paddingTop: 10,
-    paddingHorizontal: 20,
+  logoutBtn: {
+    width: "25%",
+    backgroundColor: "#BA2D0B",
+    borderRadius: 10,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 15,
+    
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
+  Nav: {
+    backgroundColor: '#D5F2E3',
   },
-  items: {
-    marginTop: 30,
-  },
-  writeTaskWrapper:{
-    position: 'absolute',
-    bottom: 60,
-    width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-  },
-  input: {
-    paddingVertical: 15,
-    paddingHorizontal: 15,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    borderColor: '#C0C0C0',
-    borderWidth: 1,
-    width: 250,
 
-  },
-  addWrapper: {
-    width: 60,
-    height: 60,
-    backgroundColor: '#FFF',
-    borderRadius: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderColor: '#C0C0C0',
-    borderWidth: 1,
-  },
-  addText: {
-    marginTop: 0,
-  },
 });
