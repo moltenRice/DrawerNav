@@ -11,6 +11,7 @@ import Home from './screens/Home';
 import Settings from './screens/Settings';
 
 
+
 const Drawer = createDrawerNavigator();
 
 const AuthStack = createNativeStackNavigator();
@@ -100,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#d5f2e3',
   },
   logoutBtn: {
-    width: "25%",
+    width: 100,
     backgroundColor: "#BA2D0B",
     borderRadius: 10,
     height: 40,
