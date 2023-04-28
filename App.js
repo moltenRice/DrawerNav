@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { BackHandler, Alert } from 'react-native';
 import Login from './screens/Login';
 import Home from './screens/Home';
-import Settings from './screens/Settings';
+import Forum from './screens/Forum';
 
 
 
@@ -36,7 +36,7 @@ function DrawerRoutes() {
           headerShown: true,
           headerStyle: { backgroundColor: '#D5F2E3' },
         })}/>
-      <Drawer.Screen name="Settings" component={Settings} options={({navigation})=>({
+      <Drawer.Screen name="Forum" component={Forum} options={({navigation})=>({
           headerRight: () => (
             <TouchableOpacity style={styles.logoutBtn} onPress={() => Alert.alert('Hold on!', 'Are you sure you want to log out?', [
               {
@@ -53,9 +53,11 @@ function DrawerRoutes() {
           headerShown: true,
           headerStyle: { backgroundColor: '#D5F2E3' },
         })} />
+        
     </Drawer.Navigator>
   );
 }
+
 
 
 export default function App() {
@@ -84,7 +86,7 @@ export default function App() {
       <AuthStack.Navigator screenOptions={{headerStyle:{backgroundColor:"#D5F2E3"}}} >
         <AuthStack.Screen style={styles.Nav} name="Login" component={Login} options={{title:'Log In',}}/>
     
-        <AuthStack.Screen name="Home" component={DrawerRoutes} options={{headerShown:false}} ></AuthStack.Screen>
+        <AuthStack.Screen name="Home" component={DrawerRoutes} options={{headerShown:false}}></AuthStack.Screen>
         
       </AuthStack.Navigator>
       

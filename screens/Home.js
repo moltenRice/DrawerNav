@@ -1,69 +1,66 @@
 import { KeyboardAvoidingView ,StyleSheet, Text, View, TextInput, TouchableOpacity, Keyboard, Image } from 'react-native';
 import React, {useState} from 'react';
-import Task from '../components/Task';
+import Post from '../components/Post';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import settings from '../App';
-
+import Forum from './Forum';
 const Drawer = createDrawerNavigator();
 
 function Root() {
   return (
     <Drawer.Navigator>
       <Drawer.Screen name="Home" component={Home} />
-      <Drawer.Screen name="Settings" component={settings} />
+      <Drawer.Screen name="Forum" component={Forum} />
     </Drawer.Navigator>
   );
 }
 
 function Home() {
-    const [task, setTask] = useState();
+    const [post, setPost] = useState();
   
-    const [taskItems, setTaskItems] = useState([]);
+    const [postItems, setPostItems] = useState([]);
   
-    const handleAddTask = () => {
+    const handleAddPost = () => {
       Keyboard.dismiss();
-      setTaskItems([...taskItems, task]);
-      setTask(null);
+      setPostItems([...postItems, post]);
+      setPost(null);
     }
   
-      const completeTask = (index) => {
-        let itemsCopy = [...taskItems];
+      const completePost = (index) => {
+        let itemsCopy = [...postItems];
         itemsCopy.splice(index, 1);
-        setTaskItems(itemsCopy);
+        setPostItems(itemsCopy);
     }
     return (
     
         <View style={styles.container}>
           
-        {/* Today's Tasks */}
-        <View style={styles.tasksWrapper}>
-          <Text style={styles.sectionTitle}>Today's Tasks</Text>
+        {/* Today's Posts */}
+        <View style={styles.postsWrapper}>
+          <Text style={styles.sectionTitle}>Today's Posts</Text>
     
           <View style={styles.items}>
-            {/* This is where the task will go */}
+            {/* This is where the post will go */}
             {
-              taskItems.map((item, index) => {
+              postItems.map((item, index) => {
                 return(
-                  <TouchableOpacity key={index} onPress={()=>completeTask(index)}>
-                  <Task key={index} text={item}/>
+                  <TouchableOpacity key={index} onPress={()=>completePost(index)}>
+                  <Post key={index} text={item}/>
                   </TouchableOpacity>
                 ) 
               })
             }
           </View>
         </View>
-        {/* Write a task */}
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={styles.writeTaskWrapper}>
-    
-          <TextInput style={styles.input} placeholder={'Write a task'} value={task} onChangeText={text=>setTask(text)} />
-          <TouchableOpacity onPress={()=>handleAddTask()} >
+        {/* Write a post */}
+   
+          <TouchableOpacity style={styles.addPostBtn} onPress={()=>handleAddPost()} >
             <View style={styles.addWrapper}>
               <Text style={styles.addText}>+</Text>
             </View>
           </TouchableOpacity>
-        </KeyboardAvoidingView>
+
+
       </View>
 
     );
@@ -73,9 +70,10 @@ function Home() {
   const styles = StyleSheet.create({
     container: {
       flex: 1,
+      height: 200,
       backgroundColor: '#73BA9B',
     },
-    tasksWrapper: {
+    postsWrapper: {
       paddingTop: 10,
       paddingHorizontal: 20,
     },
@@ -86,10 +84,9 @@ function Home() {
     items: {
       marginTop: 30,
     },
-    writeTaskWrapper:{
+    writePostWrapper:{
       position: 'absolute',
-      bottom: 60,
-      width: '100%',
+      bottom: 0,
       flexDirection: 'row',
       justifyContent: 'space-around',
       alignItems: 'center',
@@ -117,6 +114,12 @@ function Home() {
     addText: {
       marginTop: 0,
     },
+    addPostBtn: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 0,
+    }
   });
 
 export default Home;

@@ -1,9 +1,40 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, TextInput, StyleSheet, Image, Text, TouchableOpacity} from 'react-native';
+import axios from 'axios';
+
 
 function Login ({navigation}){
-    const[email, setEmail] = useState('');
-    const[password, setPassword] = useState('');
+    const [user, setUser] = useState(undefined);
+    const [email, setEmail] = useState(undefined);
+    const [password, setPassword] = useState(undefined);
+
+    const server = axios.create({
+      timeout: 1000,
+      baseURL: 'http://172.19.9.14:5000/',
+    });
+
+
+
+    async function login(){
+      try{
+        const response = await server.get('/users');
+        console.log(response);
+        setUser(response?.data);
+    if (response?.data?.user?.email === email && response?.data?.user?.password === password){
+      navigation.navigate('Home');
+    }else if (response?.data?.user?.email !== email && response?.data?.user?.password !== password){
+      alert('Email or password are incorrect');
+    }else if (response?.data?.user?.email !== email){
+      alert('Email is incorrect');
+    }else if (response?.data?.user?.password !== password){
+      alert('Password is incorrect');
+    }else if (response?.data?.user?.email === undefined && response?.data?.user?.password === undefined){
+      alert('Email and password are incorrect');
+    }
+  }catch(error){
+    console.log(error)
+  }
+    }
 
   return(
     <View style={styles.container} >
@@ -13,8 +44,9 @@ function Login ({navigation}){
           style={styles.TextInput}
           placeholder="Email"
           placeholderTextColor="#003f5c"
-          onChangeText={(email) => setEmail(email)}
+          onChangeText={setEmail}
         /> 
+
       </View> 
       <View style={styles.inputView}>
         <TextInput
@@ -22,14 +54,14 @@ function Login ({navigation}){
           placeholder="Password"
           placeholderTextColor="#003f5c"
           secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
+          onChangeText={setPassword}
         /> 
       </View>
       <TouchableOpacity>
         <Text style={styles.forgot_button}>Forgot Password?</Text> 
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.loginBtn} onPress={()=>navigation.navigate("Home")} >
+      <TouchableOpacity style={styles.loginBtn} onPress={(login)} >
         <Text style={styles.loginText}>Login</Text> 
       </TouchableOpacity>
     </View>
@@ -61,8 +93,10 @@ const styles = StyleSheet.create({
       TextInput: {
         height: 50,
         flex: 1,
-        padding: 10,
-        marginLeft: 20,
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        padding: 0,
+        marginLeft: -200,
       },
       forgot_button: {
         height: 30,
